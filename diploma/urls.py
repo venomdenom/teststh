@@ -1,3 +1,5 @@
+from django.contrib import admin
+from django.urls import path, include
 """
 URL configuration for diploma project.
 
@@ -18,5 +20,6 @@ Including another URLconf
 from django.urls import path
 
 urlpatterns = [
-    #    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
+    path('automl/', include('automl.urls')),
 ]
