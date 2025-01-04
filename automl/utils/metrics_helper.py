@@ -19,6 +19,7 @@ class ClassificationMetrics:
             "recall": recall_score(self.y_true, self.y_pred, average='weighted', zero_division=0),
             "f1_score": f1_score(self.y_true, self.y_pred, average='weighted', zero_division=0)
         }
+
         return self.metrics
 
     def get_metric(self, key: str) -> float | None:

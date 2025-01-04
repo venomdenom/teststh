@@ -19,7 +19,7 @@ class DataPreprocessor:
         except Exception as e:
             raise ValueError(f"Error loading file: {e}")
 
-    def handle_missing_values(self, fill_with_median: bool = False) -> None:
+    def _handle_missing_values(self, fill_with_median: bool = False) -> None:
         """ Handle missing values by filling with the median of each column or dropping them """
         if fill_with_median:
             for column in self.data.select_dtypes(include=['float64', 'int64']).columns:
@@ -27,15 +27,15 @@ class DataPreprocessor:
         else:
             self.data.dropna(inplace=True)
 
-    def encode_categorical(self) -> None:
+    def _encode_categorical(self) -> None:
         """ Encode categorical features using Label Encoding """
         label_encoder = LabelEncoder()
-        catorical_columns = self.data.select_dtypes(include=['object']).columns
+        categorical_columns = self.data.select_dtypes(include=['object']).columns
 
-        for column in catorical_columns:
+        for column in categorical_columns:
             self.data[column] = label_encoder.fit_transform(self.data[column])
 
-    def scale_data(self, scaler_type: str = 'standard') -> None:
+    def _scale_data(self, scaler_type: str = 'standard') -> None:
         """ Scale numerical features using the selected scaling algorithm """
         match scaler_type:
             case 'standard':
@@ -57,18 +57,17 @@ class DataPreprocessor:
                    fill_with_median: bool = False, scaler_type: str = 'standard') -> pd.DataFrame:
         """ Apply all preprocessing steps """
         if include_handling_missing_values:
-            self.handle_missing_values(fill_with_median)
+            self._handle_missing_values(fill_with_median)
 
         if include_encoding:
-            self.encode_categorical()
+            self._encode_categorical()
 
         if include_data_scaling:
-            self.scale_data(scaler_type)
+            self._scale_data(scaler_type)
 
         return self.data
 
-    def split_data(self, target_column: str = 'target', test_size: float = 0.2) -> Tuple[
-        pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
+    def split_data(self, target_column: str = 'target', test_size: float = 0.2) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
         """ Split data into train and test sets """
         X = self.data.drop(target_column, axis=1)  # Features
         y = self.data[target_column]  # Target column

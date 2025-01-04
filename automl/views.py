@@ -4,7 +4,7 @@ from rest_framework.parsers import MultiPartParser
 from django.core.files.storage import FileSystemStorage
 from .utils.preprocessing_helper import DataPreprocessor
 from .utils.metrics_helper import ClassificationMetrics, RegressionMetrics, MetricsRecommender
-from .utils import preprocessing_helper, metrics_helper
+from .utils.model_selector import ModelSelector
 
 
 class UploadDataset(APIView):
@@ -15,13 +15,13 @@ class UploadDataset(APIView):
         if not file:
             return Response({'error': 'Файл не предоставлен'}, status=400)
 
-        # Сохранение файла
+        # Saving file into temporary directory
         fs = FileSystemStorage(location='/tmp/')
         filename = fs.save(file.name, file)
         file_path = fs.path(filename)
 
         try:
-            # Инициализация DataPreprocessor
+            # DataPreprocessor initialization
             preprocessor = DataPreprocessor(file_path)
             preprocessor.load_data()
             preprocessor.preprocess(
@@ -29,7 +29,7 @@ class UploadDataset(APIView):
                 scaler_type='minmax'
             )
 
-            # Сохранение обработанных данных
+            # Saving preprocessed data
             processed_file_path = f"/tmp/processed_{file.name}"
             preprocessor.data.to_csv(processed_file_path, index=False)
 
@@ -69,3 +69,17 @@ class RecommendMetric(APIView):
         recommender = MetricsRecommender(y)
         recommendations = recommender.suggest_metric()
         return Response({"recommendations": recommendations})
+
+
+class SelectModel(APIView):
+    def post(self, request):
+        X = request.data.get("X")
+        y = request.data.get("y")
+        task_type = request.data.get("task_type")  # classification or regression
+
+        if not X or not y:
+            return Response({"error": "X and y must be provided."}, status=400)
+
+        selector = ModelSelector(X, y, task_type)
+        best_model, best_score = selector.select_model()
+        return Response({"best_model": str(best_model), "best_score": best_score})

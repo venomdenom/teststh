@@ -5,6 +5,7 @@ from typing import List
 
 
 class DataHelper:
+
     @staticmethod
     def determine_target_type(y: List | np.ndarray) -> str:
         target_type = type_of_target(y)
@@ -20,4 +21,5 @@ class DataHelper:
         class_counts = Counter(y)
         total_samples = sum(class_counts.values())
         max_class_ratio = max(class_counts.values()) / total_samples
+
         return max_class_ratio > threshold
