@@ -2,10 +2,92 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, GradientBoostingRegressor
 from sklearn.metrics import make_scorer, accuracy_score, mean_squared_error, f1_score, r2_score
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, List
 import numpy as np
-from .metrics_helper import MetricsRecommender
+from enum import Enum
+from automl_api.components.helpers.base_helper import TaskType
 
+
+class ClassificationModels(Enum):
+    LogisticRegression = 1
+    RandomForestClassifier = 2
+    GradientBoostingClassifier = 3
+
+
+class RegressionModels(Enum):
+    LinearRegression = 1
+    RandomForestRegressor = 2
+    GradientBoostingRegressor = 3
+
+
+class ModelsConfig:
+    Model = ClassificationModels | RegressionModels
+    config: Dict[TaskType, Dict[Model, Dict]] = {
+        TaskType.CLASSIFICATION: {
+            ClassificationModels.LogisticRegression: {
+                'class': LogisticRegression,
+                'params': {
+                    'penalty': ['l1', 'l2', 'elasticnet', 'none'],
+                    'C': [0.01, 0.1, 1.0, 10.0],
+                    'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga'],
+                    'max_iter': [100, 200, 300],
+                }
+            },
+            ClassificationModels.RandomForestClassifier: {
+                'class': RandomForestClassifier,
+                'params': {
+                    'n_estimators': [100, 200, 300],
+                    'max_depth': [None, 10, 20, 30],
+                    'min_samples_split': [2, 5, 10],
+                    'min_samples_leaf': [1, 2, 4],
+                    'bootstrap': [True, False],
+                }
+            },
+            ClassificationModels.GradientBoostingClassifier: {
+                'class': GradientBoostingClassifier,
+                'params': {
+                    'n_estimators': [100, 200, 300],
+                    'learning_rate': [0.01, 0.1, 0.2],
+                    'max_depth': [3, 5, 7],
+                    'subsample': [0.8, 0.9, 1.0],
+                    'min_samples_split': [2, 5, 10],
+                }
+            }
+        },
+        TaskType.REGRESSION: {
+            RegressionModels.LinearRegression: {
+                'class': LinearRegression,
+                'params': {
+                    'fit_intercept': [True, False],
+                    'normalize': [True, False],
+                }
+            },
+            RegressionModels.RandomForestRegressor: {
+                'class': RandomForestRegressor,
+                'params': {
+                    'n_estimators': [100, 200, 300],
+                    'max_depth': [None, 10, 20, 30],
+                    'min_samples_split': [2, 5, 10],
+                    'min_samples_leaf': [1, 2, 4],
+                    'bootstrap': [True, False],
+                }
+            },
+            RegressionModels.GradientBoostingRegressor: {
+                'class': GradientBoostingRegressor,
+                'params': {
+                    'n_estimators': [100, 200, 300],
+                    'learning_rate': [0.01, 0.1, 0.2],
+                    'max_depth': [3, 5, 7],
+                    'subsample': [0.8, 0.9, 1.0],
+                    'min_samples_split': [2, 5, 10],
+                }
+            }
+        }
+    }
+
+    @classmethod
+    def get_models_config(cls, task_type: TaskType) -> Dict[Model, Dict]:
+        return cls.config.get(task_type, None)
 
 class ModelSelector:
     def __init__(self, X: np.ndarray, y: np.ndarray, task_type: str = None):

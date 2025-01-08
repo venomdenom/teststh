@@ -21,5 +21,5 @@ from django.urls import path
 
 urlpatterns = [
     #path('admin/', admin.site.urls),
-    path('automl/', include('automl.urls')),
+    path('automl_api/', include('automl_api.urls')),
 ]

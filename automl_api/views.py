@@ -5,10 +5,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from django.core.files.storage import FileSystemStorage
-from .utils.preprocessing_helper import DataPreprocessor
-from .utils.metrics_helper import ClassificationMetrics, RegressionMetrics, MetricsRecommender
-from .utils.model_selector import ModelSelector
-from .utils.visualizer_helper import VisualizerHelper
+from automl_api.components.preprocessing import DataPreprocessor
+from automl_api.components.metrics import MetricsRecommender
+from automl_api.components.helpers.metrics_helper import ClassificationMetrics, RegressionMetrics
+from automl_api.components.helpers.model_helper import ModelSelector
+from automl_api.components.helpers.visualizer_helper import VisualizerHelper
 
 
 class UploadDataset(APIView):
