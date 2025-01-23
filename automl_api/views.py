@@ -8,7 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from automl_api.components.preprocessing import DataPreprocessor
 from automl_api.components.metrics import MetricsRecommender
 from automl_api.components.helpers.metrics_helper import ClassificationMetrics, RegressionMetrics
-from automl_api.components.helpers.model_helper import ModelSelector
+from automl_api.components.model_selector import ModelSelector
 from automl_api.components.helpers.visualizer_helper import VisualizerHelper
 
 
