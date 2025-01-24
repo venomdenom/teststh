@@ -1,9 +1,6 @@
-from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression, LinearRegression
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingClassifier, GradientBoostingRegressor
-from sklearn.metrics import accuracy_score, mean_squared_error, f1_score, r2_score
-from typing import Any, Dict, Tuple
-import numpy as np
+from typing import Dict
 from enum import Enum
 from automl_api.components.helpers.base_helper import TaskType
 from scipy.stats import uniform, randint
